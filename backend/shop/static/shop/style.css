@@ -1,0 +1,17 @@
+.form-input {
+    font-size: 16px;
+}
+
+.cart-print {
+    padding-right: 10px
+}
+
+.link-clear {
+    text-decoration: None;
+    color: black;
+    font-weight: bold;
+}
+
+#box:after {
+    background: yellowgreen;
+}

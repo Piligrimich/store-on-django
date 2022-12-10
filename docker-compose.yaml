@@ -1,0 +1,78 @@
+version: '3.10'
+
+services:
+  postgres:
+    image: postgres:15beta3
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env.save
+
+  redis:
+    image: redis:6.2.6-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: ./backend
+    restart: always
+    command: python manage.py runserver 0.0.0.0:7000
+    ports:
+      - "7000:7000"
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - .env.save
+
+  celery:
+    build: ./backend
+    restart: always
+    command: celery -A store worker -l INFO
+    volumes:
+      - static_value:/app/static/
+    depends_on:
+      - redis
+      - postgres
+      - backend
+    env_file:
+      - .env.save
+
+  dashboard:
+    build: ./backend
+    restart: always
+    command: celery -A store flower
+    volumes:
+      - static_value:/app/static/
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
+      - backend
+    env_file:
+      - .env.save
+
+
+  nginx:
+    image: nginx:1.21.3-alpine
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_value:
+  media_value:

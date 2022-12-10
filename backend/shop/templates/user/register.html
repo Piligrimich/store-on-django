@@ -1,0 +1,35 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block main %}
+    <div class="container" style="margin-top: 5%" xmlns="http://www.w3.org/1999/html">
+    <div class="row justify-content-center">
+    <div class="col-4">
+        <div class="card login-form">
+            <div class="card-body">
+                <h1 class="card-title text-center">Регистрация</h1>
+                    <div class="card-text">
+                        <form method="post">
+                        {% csrf_token %}
+                        {% for f in form %}
+                            <div class="form-group">
+                                <p><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
+                                <div class="form-error">{{ f.errors }}</div>
+                            </div>
+                        {% endfor %}
+                        <div class="text-center">
+
+                            <button type="submit" class="btn btn-primary">Зарегестрироваться</button>
+                        </div>
+                        </form>
+
+                    </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

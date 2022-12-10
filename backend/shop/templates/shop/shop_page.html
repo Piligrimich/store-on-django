@@ -1,0 +1,23 @@
+{% extends 'shop/base.html' %}
+{% load shop_tags %}
+{% block main %}
+    <div class="row">
+  <div class="col-2">
+    <div class="list-group" id="list-tab" role="tablist">
+        {% if cat_selected == None %}
+            <a class="list-group-item list-group-item-action active" role="tab" href="{% url 'shop:home' %}">Все</a>
+        {% else %}
+            <a class="list-group-item list-group-item-action" role="tab" href="{% url 'shop:home' %}">Все</a>
+        {% endif %}
+
+        {% show_categories cat_selected=cat_selected  %}
+    </div>
+  </div>
+
+    <div class="col-8">
+{% block content %}
+
+{% endblock %}
+</div>
+</div>
+{% endblock %}

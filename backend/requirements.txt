@@ -1,0 +1,7 @@
+django
+Pillow
+psycopg2-binary
+redis
+celery
+flower
+python-dotenv

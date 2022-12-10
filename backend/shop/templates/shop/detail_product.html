@@ -1,0 +1,101 @@
+{% extends 'shop/shop_page.html' %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+    <div class="col">
+         {% if product.image %}
+            <img src="{{ product.image.url }}" style="width: 400px" >
+        {% else %}
+            <img src="/media/no_image.png" style="width: 400px">
+        {% endif %}
+    </div>
+    <div class="col">
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p>{{ product.price }} руб.</p>
+
+            <form action="{% url 'cart:cart_add' product.id %}" method="post">
+            {{ cart_product_form }}
+            {% csrf_token %}
+                <button type="submit">Добавить в корзину</button>
+
+        </form>
+    </div>
+    </div>
+
+
+    <div class="container my-5 py-5">
+    <div class="row d-flex justify-content-center">
+
+      <div class="col-md-12 col-lg-10">
+        <div class="card text-dark">
+
+          <div class="card-body p-4">
+            <h4 class="mb-0">Комментарии</h4>
+              {% if user.is_authenticated %}
+            <p class="fw-light mb-4 pb-2">Вы можете оставить комментарий</p>
+
+              {% if comment_id %}
+                    <form action="{% url 'shop:change_comment' comment_id %}" method="post">
+              {% else %}
+                    <form action="{% url 'shop:add_comment' product.id %}" method="post">
+              {% endif %}
+
+                    {% csrf_token %}
+                   {{ form_for_comment.text }}
+                    <br>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+              {% endif %}
+          </div>
+
+          <hr class="my-0" />
+
+            {% for comment in comments %}
+          <div class="card-body p-4">
+            <div class="d-flex flex-start">
+            <!-- ава пользователя слева от коммента
+              <img class="rounded-circle shadow-1-strong me-3"
+                src="" alt="avatar" width="60"
+                height="60" />
+                -->
+              <div>
+                <h6 class="fw-bold mb-1">{{ comment.user}}</h6>
+                <div class="d-flex align-items-center mb-3">
+                  <p class="mb-0" style="font-size: small">
+                      {{ comment.date_create|date:"d-m-Y"}}
+                      {% if comment.user.is_superuser %}
+                        <span class="badge bg-success">admin</span>
+                      {% endif %}
+                  </p>
+
+                {% if user.is_authenticated %}
+                    {% if user == comment.user %}
+                      <a href="{% url 'shop:change_comment' comment.id %}" class="link-muted"><i class="fas fa-pencil-alt ms-2"></i></a>
+                    {% endif %}
+                      <a href="{% url 'shop:delete_comment' comment.id %}" class="link-muted"><i class="fas fa-trash-alt ms-2"></i></a>
+                <!-- тут кнопка лайкнуть комментарий
+                  <a href="#!" class="link-danger"><i class="fas fa-heart ms-2"></i></a>
+                  -->
+                    {% endif %}
+                </div>
+                <p class="mb-0">
+                  {{ comment.text }}
+                </p>
+              </div>
+            </div>
+          </div>
+                <hr class="my-0" />
+    {% endfor %}
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
