@@ -1,4 +1,5 @@
 {% extends 'shop/shop_page.html' %}
+{% load thumbnail  %}
 
 {% block title %}
 {{ title }}
@@ -9,17 +10,18 @@
 {% for product in products %}
 
     <div class="col">
-    <div class="card" style="width: 16rem; height: 420px">
+    <div class="card" style="width: 16rem; height: 420px; margin-bottom: 1em;">
 
-        {% if product.image %}
-            <img src="{{ product.image.url }}" class="card-img-top" alt="картинка" style="height: 250px">
-        {% else %}
-            <img src="/media/no_image.png" class="card-img-top" alt="картинка" style="height: 250px">
-        {% endif %}
+            {% thumbnail product.image "250x250" format="PNG" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" style="margin: auto">
+            {% empty %}
+                <img src="/media/no_image.png" class="card-img-top" alt="картинка" style="height: 250px">
+            {% endthumbnail %}
+
 
         <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">{{ product.description|slice:35}}</p>
+            <h5 class="card-title">{{ product.name|slice:20 }}</h5>
+            <p class="card-text">{{ product.description|slice:35 }}</p>
             <div class="text-center">
                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
                     <a href="{{ product.get_absolute_url }}" class="btn btn-primary">Подробнее</a>

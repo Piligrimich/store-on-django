@@ -1,4 +1,5 @@
 {% extends 'shop/shop_page.html' %}
+{% load thumbnail  %}
 
 {% block title %}
 {{ title }}
@@ -6,12 +7,14 @@
 
 {% block content %}
     <div class="row">
-    <div class="col">
-         {% if product.image %}
-            <img src="{{ product.image.url }}" style="width: 400px" >
-        {% else %}
-            <img src="/media/no_image.png" style="width: 400px">
-        {% endif %}
+    <div class="col" style="text-align: center">
+
+             {% thumbnail product.image "400x400" format="PNG" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" style="margin: auto">
+             {% empty %}
+                 <img src="/media/no_image.png" style="width: 400px">
+            {% endthumbnail %}
+
     </div>
     <div class="col">
         <h2>{{ product.name }}</h2>
@@ -37,19 +40,21 @@
           <div class="card-body p-4">
             <h4 class="mb-0">Комментарии</h4>
               {% if user.is_authenticated %}
-            <p class="fw-light mb-4 pb-2">Вы можете оставить комментарий</p>
+                <p class="fw-light mb-4 pb-2">Вы можете оставить комментарий</p>
 
-              {% if comment_id %}
-                    <form action="{% url 'shop:change_comment' comment_id %}" method="post">
+                  {% if comment_id %}
+                        <form action="{% url 'shop:change_comment' comment_id %}" method="post">
+                  {% else %}
+                        <form action="{% url 'shop:add_comment' product.id %}" method="post">
+                  {% endif %}
+
+                        {% csrf_token %}
+                       {{ form_for_comment.text }}
+                        <br>
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
               {% else %}
-                    <form action="{% url 'shop:add_comment' product.id %}" method="post">
-              {% endif %}
-
-                    {% csrf_token %}
-                   {{ form_for_comment.text }}
-                    <br>
-                    <button type="submit" class="btn btn-primary">Отправить</button>
-                </form>
+                <p class="fw-light mb-4 pb-2">Что бы оставить комментарий <a href="{% url 'shop:login' %}">войдите</a></p>
               {% endif %}
           </div>
 

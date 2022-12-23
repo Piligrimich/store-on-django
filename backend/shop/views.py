@@ -16,23 +16,20 @@ class ProductList(ListView):
     model = Product
     template_name = 'shop/product_list.html'
     context_object_name = 'products'
-    extra_context = {'title': 'Каталог'}
+    slug_field = 'cat_slug'
     paginate_by = 6
 
     def get_queryset(self):
-        return Product.objects.filter(available=True)
-
-
-def show_category(request, cat_slug):
-    products = Product.objects.filter(category__slug=cat_slug)
-    if len(products) == 0:
-        return HttpResponse(f'<h1>Список пуст</h1>')
-    context = {
-        'title': products.first().category.name,
-        'products': products,
-        'cat_selected': cat_slug,
-    }
-    return render(request, 'shop/product_list.html', context)
+        if 'cat_slug' not in self.kwargs:
+            self.extra_context = {'title': 'Каталог'}
+            return Product.objects.filter(available=True)
+        else:
+            products = Product.objects.filter(category__slug=self.kwargs['cat_slug'], available=True)
+            self.extra_context = {
+                'title': products.first().category.name,
+                'cat_selected': self.kwargs['cat_slug'],
+            }
+            return products
 
 
 def product_detail(request, product_slug):

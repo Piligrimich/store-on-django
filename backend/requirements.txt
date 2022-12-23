@@ -5,3 +5,4 @@ redis
 celery
 flower
 python-dotenv
+sorl-thumbnail
